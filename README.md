@@ -6,3 +6,7 @@ A trivial tool for moving files with a specific extension.
 
 ## Example
 ```dialysis ~/Documents/ ~/Dropbox/ .txt```
+
+### Todo:
+- [ ] Accept multiple extensions
+- [ ] Better tolerance for path inputs
