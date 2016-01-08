@@ -21,6 +21,8 @@ func (f *file) fullPath() string {
 	return f.dirpath + f.name
 }
 
+//func dirify(path string) string {}
+
 //filterDirTwo returns file structs for just the files in a
 // given directory that matches extension ext
 func filterDir(dirpath, ext string) ([]file, error) {
@@ -44,24 +46,6 @@ func filterDir(dirpath, ext string) ([]file, error) {
 	return result, nil
 }
 
-// func validExtension(ext string) bool {
-// 	if !strings.HasPrefix(ext, ".") {
-// 		return false
-// 	}
-// 	return true
-// }
-
-// func extension(filename string) (string, error) {
-// 	// get the file's extension
-// 	i := strings.LastIndex(filename, ".")
-
-// 	ext := filename[i:]
-// 	if !validExtension(ext) {
-// 		return "", errors.New("ERROR: Invalid extension: %s")
-// 	}
-// 	return ext, nil
-// }
-
 // move moves the given files to the new, given path.
 // The new path will be the provided newdirpath joined
 // with the original file name, as determined by
@@ -81,7 +65,7 @@ func move(files []file, newdirpath string) error {
 
 func getArgs() (string, string, string) {
 	if len(os.Args) != 4 {
-		log.Fatal("Error parsing command line arguments.\nRequires three args: SOURCE DESTINATION EXTENSION")
+		log.Fatal("Error parsing command line arguments.\nRequires three args: SOURCE_DIRECTORY DESTINATION_DIRECTORY EXTENSION")
 	}
 	return os.Args[1], os.Args[2], os.Args[3]
 }
