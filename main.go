@@ -4,11 +4,12 @@
 package main
 
 import (
-	"errors"
+	// "errors"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	// "strings"
 )
 
 type file struct {
@@ -17,7 +18,7 @@ type file struct {
 }
 
 func (f *file) fullPath() string {
-	return filepath.Abs(dirpath + name)
+	return f.dirpath + f.name
 }
 
 //filterDirTwo returns file structs for just the files in a
@@ -32,33 +33,34 @@ func filterDir(dirpath, ext string) ([]file, error) {
 		if f.IsDir() {
 			log.Printf("Skipping %s: is a directory", f.Name())
 		}
-		e, err := extension(f.Name())
+		e := filepath.Ext(f.Name())
 		if err != nil {
-			log.Printf("Invalid extension: %s", f.Name())
+			log.Println(err)
 		}
 		if e == ext {
-			append(result, file{dirpath, f.Name()})
+			result = append(result, file{dirpath, f.Name()})
 		}
 	}
-	return result
+	return result, nil
 }
 
-func validExtension(ext string) bool {
-	if !strings.HasPrefix(ext, ".") {
-		return false
-	}
-	return true
-}
+// func validExtension(ext string) bool {
+// 	if !strings.HasPrefix(ext, ".") {
+// 		return false
+// 	}
+// 	return true
+// }
 
-func extension(filename string) (string, error) {
-	// get the file's extension
-	i := strings.LastIndex(filename, ".")
+// func extension(filename string) (string, error) {
+// 	// get the file's extension
+// 	i := strings.LastIndex(filename, ".")
 
-	ext := filename[i:]
-	if !validExtension(ext) {
-		return "", errors.New("Invalid extension.")
-	}
-}
+// 	ext := filename[i:]
+// 	if !validExtension(ext) {
+// 		return "", errors.New("ERROR: Invalid extension: %s")
+// 	}
+// 	return ext, nil
+// }
 
 // move moves the given files to the new, given path.
 // The new path will be the provided newdirpath joined
@@ -66,9 +68,10 @@ func extension(filename string) (string, error) {
 // os.FileInfo.Name()
 func move(files []file, newdirpath string) error {
 	for _, f := range files {
+		path := newdirpath + f.name
 		if err := os.Rename(
 			f.fullPath(),
-			filepath.Abs(f.name+newdirpath),
+			path,
 		); err != nil {
 			return err
 		}
@@ -77,10 +80,10 @@ func move(files []file, newdirpath string) error {
 }
 
 func getArgs() (string, string, string) {
-	if len(os.Args) != 3 {
+	if len(os.Args) != 4 {
 		log.Fatal("Error parsing command line arguments.\nRequires three args: SOURCE DESTINATION EXTENSION")
 	}
-	return os.Args[0], os.Args[1], os.Args[2]
+	return os.Args[1], os.Args[2], os.Args[3]
 }
 
 func main() {
@@ -90,15 +93,7 @@ func main() {
 	// third arg = file extension to match
 	src, dst, ext := getArgs()
 
-	start, err := filepath.Abs(src)
-	if err != nil {
-		log.Fatal(err)
-	}
-	end, err := filepath.Abs(dst)
-	if err != nil {
-		log.Fatal(err)
-	}
-	files, err := filterDir(start, ext)
+	files, err := filterDir(src, ext)
 	if err != nil {
 		log.Fatal(err)
 	}
