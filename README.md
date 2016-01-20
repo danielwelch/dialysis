@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Filtex
 A trivial tool for moving files with a specific extension.
 
